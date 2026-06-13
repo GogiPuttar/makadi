@@ -7,17 +7,28 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
+find_package(X11 REQUIRED)
 
 add_executable(makadi
   src/main.cpp
   src/core/world.cpp
   src/render/overlay_window.cpp
   src/behaviors/flee_from_pointer.cpp
+  src/platform/x11_overlay_platform.cpp
+  src/input/pointer_provider.cpp
 )
 
-target_include_directories(makadi PRIVATE include)
+target_include_directories(makadi PRIVATE
+  include
+  ${X11_INCLUDE_DIR}
+)
 
-target_link_libraries(makadi PRIVATE Qt6::Widgets)
+target_link_libraries(makadi PRIVATE
+  Qt6::Widgets
+  ${X11_LIBRARIES}
+  ${X11_Xfixes_LIB}
+  ${X11_Xext_LIB}
+)
 
 install(TARGETS makadi
   RUNTIME DESTINATION bin

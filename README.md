@@ -6,6 +6,7 @@ Trying to make an on-screen pet spider. Let's see where this goes...
 sudo apt install cmake g++ qt6-base-dev
 sudo apt install libgl-dev libglx-dev libopengl-dev mesa-common-dev
 sudo apt install libxkbcommon-dev
+sudo apt install libx11-dev libxfixes-dev libxext-dev
 ```
 
 ## Instructions
