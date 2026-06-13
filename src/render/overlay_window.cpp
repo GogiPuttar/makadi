@@ -33,10 +33,14 @@ private:
 
 namespace makadi::render {
 
-OverlayWindow::OverlayWindow(bool debug, QWidget* parent)
+OverlayWindow::OverlayWindow(
+  bool debug,
+  const makadi::config::AppConfig& config,
+  QWidget* parent)
 : QWidget(parent),
   pointer_provider_(*this),
-  debug_(debug)
+  debug_(debug),
+  config_(config)
 {
   setWindowFlags(
     Qt::FramelessWindowHint |
@@ -51,7 +55,46 @@ OverlayWindow::OverlayWindow(bool debug, QWidget* parent)
   const QRect screen_rect = QGuiApplication::primaryScreen()->availableGeometry();
   setGeometry(screen_rect);
 
+  world_.mainEntity().radius = config_.asset.radius;
   world_.mainEntity().position = QPointF(width() / 2.0, height() / 2.0);
+
+  if (config_.asset.type == makadi::config::AssetType::Image) {
+    has_entity_image_ = entity_image_.load(config_.asset.path);
+
+    if (!has_entity_image_) {
+      std::cerr << "[makadi] Failed to load image: "
+                << config_.asset.path.toStdString() << "\n";
+    }
+  }
+
+  if (debug_) {
+    std::cerr << "[makadi debug] Asset type: ";
+
+    if (config_.asset.type == makadi::config::AssetType::Image) {
+      std::cerr << "image\n";
+      std::cerr << "[makadi debug] Asset path: "
+                << config_.asset.path.toStdString() << "\n";
+    } else {
+      std::cerr << "circle\n";
+      std::cerr << "[makadi debug] Asset color: "
+                << config_.asset.color.toStdString() << "\n";
+    }
+
+    std::cerr << "[makadi debug] Asset radius: "
+              << config_.asset.radius << "\n";
+  }
+
+  if (config_.asset.type == makadi::config::AssetType::Image) {
+    has_entity_image_ = entity_image_.load(config_.asset.path);
+
+    if (debug_) {
+      if (has_entity_image_) {
+        std::cerr << "[makadi debug] Loaded image asset successfully\n";
+      } else {
+        std::cerr << "[makadi debug] Failed to load image asset\n";
+      }
+    }
+  }
 
   auto* quit_shortcut = new QShortcut(QKeySequence("Ctrl+Q"), this);
   connect(quit_shortcut, &QShortcut::activated, qApp, &QApplication::quit);
@@ -113,13 +156,22 @@ void OverlayWindow::paintEvent(QPaintEvent*)
 
   const auto& entity = world_.mainEntity();
 
-  painter.setBrush(Qt::black);
-  painter.setPen(Qt::NoPen);
+  if (config_.asset.type == makadi::config::AssetType::Image && has_entity_image_) {
+    const double size = entity.radius * 2.0;
 
-  painter.drawEllipse(
-    entity.position,
-    entity.radius,
-    entity.radius);
+    QRectF target(
+      entity.position.x() - entity.radius,
+      entity.position.y() - entity.radius,
+      size,
+      size);
+
+    painter.drawPixmap(target, entity_image_, entity_image_.rect());
+    return;
+  }
+
+  painter.setBrush(QColor(config_.asset.color));
+  painter.setPen(Qt::NoPen);
+  painter.drawEllipse(entity.position, entity.radius, entity.radius);
 }
 
 }  // namespace makadi::render

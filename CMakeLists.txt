@@ -8,6 +8,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
 find_package(X11 REQUIRED)
+find_package(yaml-cpp REQUIRED)
 
 add_executable(makadi
   src/main.cpp
@@ -16,6 +17,8 @@ add_executable(makadi
   src/behaviors/flee_from_pointer.cpp
   src/platform/x11_overlay_platform.cpp
   src/input/pointer_provider.cpp
+  src/config/app_config.cpp
+  src/config/path_utils.cpp
 )
 
 target_include_directories(makadi PRIVATE
@@ -25,6 +28,7 @@ target_include_directories(makadi PRIVATE
 
 target_link_libraries(makadi PRIVATE
   Qt6::Widgets
+  yaml-cpp
   ${X11_LIBRARIES}
   ${X11_Xfixes_LIB}
   ${X11_Xext_LIB}

@@ -1,0 +1,9 @@
+# asset:
+#   type: circle
+#   radius: 24
+#   color: black
+
+asset:
+  type: image
+  path: ../assets/images/spider.png
+  radius: 24
