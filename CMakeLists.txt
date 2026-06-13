@@ -12,11 +12,18 @@ find_package(yaml-cpp REQUIRED)
 
 add_executable(makadi
   src/main.cpp
+
   src/core/world.cpp
+
   src/render/overlay_window.cpp
+
   src/behaviors/flee_from_pointer.cpp
+  src/behaviors/flee_from_pointer_and_turn_away.cpp
+
   src/platform/x11_overlay_platform.cpp
+
   src/input/pointer_provider.cpp
+  
   src/config/app_config.cpp
   src/config/path_utils.cpp
 )

@@ -2,6 +2,7 @@
 #include "makadi/render/overlay_window.hpp"
 
 #include "makadi/behaviors/flee_from_pointer.hpp"
+#include "makadi/behaviors/flee_from_pointer_and_turn_away.hpp"
 
 #include "makadi/platform/overlay_platform.hpp"
 
@@ -56,7 +57,9 @@ OverlayWindow::OverlayWindow(
   setGeometry(screen_rect);
 
   world_.mainEntity().radius = config_.asset.radius;
-  world_.mainEntity().position = QPointF(width() / 2.0, height() / 2.0);
+  world_.mainEntity().pose.x = width() / 2.0;
+  world_.mainEntity().pose.y = height() / 2.0;
+  world_.mainEntity().pose.theta = makadi::core::Angle::fromRadians(0.0);
 
   if (config_.asset.type == makadi::config::AssetType::Image) {
     has_entity_image_ = entity_image_.load(config_.asset.path);
@@ -101,6 +104,7 @@ OverlayWindow::OverlayWindow(
 
   world_.setBehavior(
     std::make_unique<behaviors::FleeFromPointer>(
+    // std::make_unique<behaviors::FleeFromPointerAndTurnAway>(
       world_.mainEntity(),
       pointer_provider_));
 
@@ -119,8 +123,8 @@ void OverlayWindow::tick()
 
   auto& entity = world_.mainEntity();
 
-  entity.position.setX(std::clamp(entity.position.x(), 0.0, double(width())));
-  entity.position.setY(std::clamp(entity.position.y(), 0.0, double(height())));
+  entity.pose.x = std::clamp(entity.pose.x, 0.0, double(width()));
+  entity.pose.y = std::clamp(entity.pose.y, 0.0, double(height()));
 
   if (debug_) {
     debug_accum_sec_ += dt;
@@ -140,7 +144,8 @@ void OverlayWindow::tick()
         << "window_size=(" << width() << ", " << height() << ") "
         << "global_pointer=(" << global_pointer.x() << ", " << global_pointer.y() << ") "
         << "local_pointer=(" << local_pointer.x() << ", " << local_pointer.y() << ") "
-        << "entity=(" << entity.position.x() << ", " << entity.position.y() << ") "
+        << "entity=(" << entity.pose.x << ", " << entity.pose.y
+        << ", " << entity.pose.theta.radians() << ") "
         << "velocity=(" << entity.velocity.x() << ", " << entity.velocity.y() << ")"
         << std::endl;
     }
@@ -156,22 +161,28 @@ void OverlayWindow::paintEvent(QPaintEvent*)
 
   const auto& entity = world_.mainEntity();
 
+  painter.save();
+
+  painter.translate(entity.pose.x, entity.pose.y);
+  painter.rotate(entity.pose.theta.degrees());
+
   if (config_.asset.type == makadi::config::AssetType::Image && has_entity_image_) {
     const double size = entity.radius * 2.0;
 
     QRectF target(
-      entity.position.x() - entity.radius,
-      entity.position.y() - entity.radius,
+      -entity.radius,
+      -entity.radius,
       size,
       size);
 
     painter.drawPixmap(target, entity_image_, entity_image_.rect());
-    return;
+  } else {
+    painter.setBrush(QColor(config_.asset.color));
+    painter.setPen(Qt::NoPen);
+    painter.drawEllipse(QPointF(0.0, 0.0), entity.radius, entity.radius);
   }
 
-  painter.setBrush(QColor(config_.asset.color));
-  painter.setPen(Qt::NoPen);
-  painter.drawEllipse(entity.position, entity.radius, entity.radius);
+  painter.restore();
 }
 
 }  // namespace makadi::render
