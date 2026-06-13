@@ -13,6 +13,8 @@
 #include <QShortcut>
 #include <QKeySequence>
 
+#include <iostream>
+
 class OverlayPointerProvider final : public makadi::input::PointerProvider {
 public:
   explicit OverlayPointerProvider(const QWidget& window)
@@ -31,9 +33,10 @@ private:
 
 namespace makadi::render {
 
-OverlayWindow::OverlayWindow(QWidget* parent)
+OverlayWindow::OverlayWindow(bool debug, QWidget* parent)
 : QWidget(parent),
-  pointer_provider_(*this)
+  pointer_provider_(*this),
+  debug_(debug)
 {
   setWindowFlags(
     Qt::FramelessWindowHint |
@@ -75,6 +78,30 @@ void OverlayWindow::tick()
 
   entity.position.setX(std::clamp(entity.position.x(), 0.0, double(width())));
   entity.position.setY(std::clamp(entity.position.y(), 0.0, double(height())));
+
+  if (debug_) {
+    debug_accum_sec_ += dt;
+
+    if (debug_accum_sec_ >= 0.25) {
+      debug_accum_sec_ = 0.0;
+
+      const QPointF global_pointer =
+        makadi::platform::globalPointerPosition();
+
+      const QPointF local_pointer =
+        pointer_provider_.pointerPosition();
+
+      std::cerr
+        << "[makadi debug] "
+        << "window_pos=(" << x() << ", " << y() << ") "
+        << "window_size=(" << width() << ", " << height() << ") "
+        << "global_pointer=(" << global_pointer.x() << ", " << global_pointer.y() << ") "
+        << "local_pointer=(" << local_pointer.x() << ", " << local_pointer.y() << ") "
+        << "entity=(" << entity.position.x() << ", " << entity.position.y() << ") "
+        << "velocity=(" << entity.velocity.x() << ", " << entity.velocity.y() << ")"
+        << std::endl;
+    }
+  }
 
   update();
 }

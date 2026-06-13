@@ -14,7 +14,7 @@ namespace makadi::render {
 
 class OverlayWindow final : public QWidget {
 public:
-  explicit OverlayWindow(QWidget* parent = nullptr);
+  explicit OverlayWindow(bool debug = false, QWidget* parent = nullptr);
 
 protected:
   void paintEvent(QPaintEvent* event) override;
@@ -25,6 +25,9 @@ private:
 
   QTimer timer_;
   QElapsedTimer clock_;
+
+  bool debug_ = false;
+  double debug_accum_sec_ = 0.0;
 
   void tick();
 };
