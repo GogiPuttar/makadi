@@ -19,5 +19,4 @@ target_link_libraries(makadi_tests PRIVATE
   makadi_core
 )
 
-include(GoogleTest)
-gtest_discover_tests(makadi_tests)
+add_test(NAME makadi_tests COMMAND makadi_tests)
