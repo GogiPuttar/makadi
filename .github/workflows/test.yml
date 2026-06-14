@@ -1,0 +1,44 @@
+# .github/workflows/test.yaml
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Build and test
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            cmake \
+            libgtest-dev \
+            qt6-base-dev \
+            libyaml-cpp-dev \
+            libx11-dev \
+            libxfixes-dev \
+            libxext-dev \
+            libgl-dev \
+            libglx-dev \
+            libopengl-dev \
+            mesa-common-dev \
+            libxkbcommon-dev
+
+      - name: Configure
+        run: cmake -B build -S . -DMAKADI_BUILD_TESTS=ON
+
+      - name: Build
+        run: cmake --build build -j"$(nproc)"
+
+      - name: Run tests
+        run: ctest --test-dir build --output-on-failure
