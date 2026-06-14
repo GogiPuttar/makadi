@@ -9,7 +9,7 @@ The goal is to make this crawl around your screen like your own pet spider!
 
 <br>
 
-https://github.com/user-attachments/assets/55956a78-4bd0-459e-b69b-34f783456926
+https://github.com/user-attachments/assets/1578430e-ec74-4840-8666-a37ad66dc261
 
 <br>
 
