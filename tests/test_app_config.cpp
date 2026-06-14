@@ -201,7 +201,7 @@ asset:
 
 animation:
   walking:
-    frames_folder: ../assets/animation/walking_3
+    frames_folder: ../assets/animation/walking_default
     speed_to_fps: 0.08
     min_fps: 10
     max_fps: 80
@@ -211,7 +211,7 @@ animation:
     makadi::config::loadAppConfig(QString::fromStdString(path.string()));
 
   const auto expected =
-    (path.parent_path() / "../assets/animation/walking_3").lexically_normal();
+    (path.parent_path() / "../assets/animation/walking_default").lexically_normal();
 
   EXPECT_EQ(config.animation.walking.frames_folder.toStdString(), expected.string());
   EXPECT_DOUBLE_EQ(config.animation.walking.speed_to_fps, 0.08);

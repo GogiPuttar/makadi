@@ -22,34 +22,28 @@ The goal is to make this crawl around your screen like your own pet spider!
 Current capabilities:
 
 * Transparent desktop overlay rendering
-* X11 input passthrough
+* X11 click-through overlay support
 * Global mouse position tracking
-* Configurable entity assets
-
-  * Colored circles
-  * PNG image assets
-* Configurable behaviors loaded from YAML
-* Custom 2D pose representation
-
-  * `Pose2D`
-  * `Angle`
-* Unit test suite with GoogleTest
-* GitHub Actions CI for pull requests
+* Static and animated sprite assets
+* YAML-driven configuration
+* Multiple configurable behaviors
+* Speed-driven animation playback
+* Custom 2D math types (`Pose2D`, `Angle`)
+* Unit testing with GoogleTest
+* GitHub Actions continuous integration
 
 ---
 
 ## Platform Support
 
-Current support:
+| Platform        | Status       |
+| --------------- | ------------ |
+| Linux (X11)     | Supported    |
+| Linux (Wayland) | Experimental |
+| Windows         | Planned      |
+| macOS           | Planned      |
 
-| Platform        | Status                     |
-| --------------- | -------------------------- |
-| Linux (X11)     | Supported                  |
-| Linux (Wayland) | Experimental / Unsupported |
-| Windows         | Not implemented            |
-| macOS           | Not implemented            |
-
-Makadi currently relies on X11 features to support click-through overlays while simultaneously tracking the global mouse position.
+Makadi currently relies on X11 features to support click-through overlays while simultaneously tracking global mouse position.
 
 ---
 
@@ -89,17 +83,16 @@ cmake --build build -j
 ./build/makadi
 ```
 
-Run with debugging:
+Run with debugging enabled:
 
 ```bash
 ./build/makadi --debug
 ```
 
-Specify a config:
+Specify a configuration file:
 
 ```bash
-./build/makadi \
-  --config configs/default.yaml
+./build/makadi --config configs/default.yaml
 ```
 
 ---
@@ -113,20 +106,38 @@ Example:
 ```yaml
 asset:
   type: image
-  path: ../assets/spiders/spider.png
-  radius: 48
+  path: ../assets/spider.png
+  radius: 64
 
 behavior:
   type: flee_from_pointer_and_turn_away
-  flee_radius: 160
-  max_speed: 500
-  damping: 0.90
+
+  flee_radius: 60
+  safe_radius: 160
+
+  min_speed: 300
+  max_speed: 1000
+
   turn_gain: 12.0
+  max_turn_speed: 12.0
+
+  velocity_tracking_gain: 12.0
+
+  pointer_filter_alpha: 0.15
+
+animation:
+  walking:
+    frames_folder: ../assets/animation/walking_default
+    speed_to_fps: 0.08
+    min_fps: 10
+    max_fps: 80
 ```
 
-### Asset Types
+---
 
-#### Circle
+## Assets
+
+### Circle
 
 ```yaml
 asset:
@@ -135,34 +146,37 @@ asset:
   color: black
 ```
 
-#### Image
+### Image
 
 ```yaml
 asset:
   type: image
-  path: ../assets/spiders/spider.png
-  radius: 48
+  path: ../assets/spider.png
+  radius: 64
 ```
 
-### Behavior Types
+Paths are resolved relative to the configuration file location.
 
-#### Flee From Pointer
+---
 
-```yaml
-behavior:
-  type: flee_from_pointer
-```
+## Behaviors
 
-Moves away from the mouse cursor.
+### flee_from_pointer
 
-#### Flee From Pointer And Turn Away
+Moves directly away from the mouse pointer.
 
-```yaml
-behavior:
-  type: flee_from_pointer_and_turn_away
-```
+### flee_from_pointer_and_turn_away
 
-Moves away from the mouse cursor while rotating to face away from it.
+A more natural spider-like response:
+
+* Becomes "spooked" inside `flee_radius`
+* Continues fleeing until outside `safe_radius`
+* Turns to face away from the pointer
+* Enforces configurable minimum movement speed
+* Uses velocity tracking to avoid orbiting
+* Supports configurable pointer low-pass filtering
+
+---
 
 ---
 
@@ -179,7 +193,7 @@ assets/spiders/spider.png
 
 ```yaml
 asset:
-  path: ../assets/spiders/spider.png
+  path: ../assets/spider.png
 ```
 
 This works regardless of the directory from which Makadi is launched.
@@ -221,68 +235,81 @@ pose.theta = Angle::fromDegrees(90);
 
 ---
 
-## Project Structure
+## Animation
+
+Makadi supports animated sprite sequences.
+
+Frames are loaded from a directory and automatically sorted alphabetically:
 
 ```text
-makadi/
-├── assets/
-├── configs/
-├── include/
-├── src/
-├── tests/
-├── .github/workflows/
-└── CMakeLists.txt
+walk_00.png
+walk_01.png
+walk_02.png
+...
+walk_07.png
 ```
 
-### Core Library
+Animation playback speed is driven by entity movement speed:
 
-Most functionality lives inside:
+```text
+fps = clamp(
+  speed * speed_to_fps,
+  min_fps,
+  max_fps)
+```
+
+When an entity stops moving, the last animation frame is preserved to create a natural stepping pose instead of snapping back to an idle image.
+
+---
+
+## Architecture
 
 ```text
 makadi_core
+├── Configuration
+├── Behaviors
+├── Animation
+├── Rendering
+├── Input
+├── Platform
+└── Core math types
 ```
 
-This includes:
-
-* Configuration
-* Behaviors
-* Rendering
-* Input handling
-* Platform abstractions
-* Core math types
-
-The executable itself is intentionally minimal.
+The executable itself contains only application startup and configuration loading logic.
 
 ---
 
 ## Testing
 
-Build and run tests:
+Run all tests:
 
 ```bash
 ctest --test-dir build --output-on-failure
 ```
 
-Current test coverage includes:
+Current coverage includes:
 
-* Angle normalization
-* Angle arithmetic
+* Angle normalization and arithmetic
 * Pose2D
 * Path resolution
 * YAML configuration parsing
-* Behavior execution
-* Behavior parameter handling
+* Animated sprite loading
+* Animation frame selection
+* Flee behavior
+* Turn-away behavior
+* Hysteresis (`flee_radius` / `safe_radius`)
+* Pointer filtering
+* Velocity tracking
+* Heading offsets
 
 ---
 
 ## Continuous Integration
 
-All pull requests automatically run:
+Every pull request automatically:
 
-1. Configure
-2. Build
-3. Execute unit tests
+1. Configures the project
+2. Builds the project
+3. Runs the complete test suite
 
-A pull request cannot be merged if the test workflow fails.
-
----
+Pull requests must pass CI before being merged.

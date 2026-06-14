@@ -35,7 +35,7 @@ behavior:
 
 animation:
   walking:
-    frames_folder: ../assets/animation/walking_3
+    frames_folder: ../assets/animation/walking_default
     speed_to_fps: 0.08
     min_fps: 40
     max_fps: 80
