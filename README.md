@@ -9,9 +9,7 @@ The goal is to make this crawl around your screen like your own pet spider!
 
 <br>
 
-<p align="center">
-  <img src="docs_images/example_image.png" alt="a makadi" />
-</p>
+https://github.com/user-attachments/assets/55956a78-4bd0-459e-b69b-34f783456926
 
 <br>
 
