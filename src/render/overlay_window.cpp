@@ -15,6 +15,7 @@
 #include <QKeySequence>
 
 #include <iostream>
+#include <cmath>
 
 class OverlayPointerProvider final : public makadi::input::PointerProvider {
 public:
@@ -70,6 +71,25 @@ OverlayWindow::OverlayWindow(
     }
   }
 
+  if (!config_.animation.walking.frames_folder.isEmpty()) {
+    walking_animation_.setSpeedToFps(config_.animation.walking.speed_to_fps);
+    walking_animation_.setMinFps(config_.animation.walking.min_fps);
+    walking_animation_.setMaxFps(config_.animation.walking.max_fps);
+
+    has_walking_animation_ =
+      walking_animation_.loadFromFolder(config_.animation.walking.frames_folder);
+
+    if (debug_) {
+      std::cerr
+        << "[makadi debug] Walking animation folder: "
+        << config_.animation.walking.frames_folder.toStdString() << "\n"
+        << "[makadi debug] Walking animation loaded: "
+        << (has_walking_animation_ ? "true" : "false") << "\n"
+        << "[makadi debug] Walking frame count: "
+        << walking_animation_.frameCount() << "\n";
+    }
+  }
+
   if (debug_) {
     std::cerr << "[makadi debug] Asset type: ";
 
@@ -104,6 +124,17 @@ OverlayWindow::OverlayWindow(
       << "[makadi debug] Behavior max_speed: " << config_.behavior.max_speed << "\n"
       << "[makadi debug] Behavior damping: " << config_.behavior.damping << "\n"
       << "[makadi debug] Behavior turn_gain: " << config_.behavior.turn_gain << "\n";
+
+    // Animation logging
+    std::cerr
+      << "[makadi debug] Behavior min_speed: " << config_.behavior.min_speed << "\n"
+      << "[makadi debug] Walking frames_folder: "
+      << config_.animation.walking.frames_folder.toStdString() << "\n"
+      << "[makadi debug] Walking speed_to_fps: "
+      << config_.animation.walking.speed_to_fps << "\n"
+      << "[makadi debug] Walking fps range: "
+      << config_.animation.walking.min_fps << " - "
+      << config_.animation.walking.max_fps << "\n";
   }
 
   if (config_.asset.type == makadi::config::AssetType::Image) {
@@ -143,6 +174,7 @@ OverlayWindow::OverlayWindow(
         pointer_provider_);
 
       node->setFleeRadius(config_.behavior.flee_radius);
+      node->setMinSpeed(config_.behavior.min_speed);
       node->setMaxSpeed(config_.behavior.max_speed);
       node->setDamping(config_.behavior.damping);
       node->setTurnGain(config_.behavior.turn_gain);
@@ -165,6 +197,8 @@ OverlayWindow::OverlayWindow(
 void OverlayWindow::tick()
 {
   const double dt = clock_.restart() / 1000.0;
+  last_dt_sec_ = dt;
+  
   world_.update(dt);
 
   auto& entity = world_.mainEntity();
@@ -212,15 +246,25 @@ void OverlayWindow::paintEvent(QPaintEvent*)
   painter.translate(entity.pose.x, entity.pose.y);
   painter.rotate(entity.pose.theta.degrees());
 
-  if (config_.asset.type == makadi::config::AssetType::Image && has_entity_image_) {
-    const double size = entity.radius * 2.0;
+  const double size = entity.radius * 2.0;
 
-    QRectF target(
-      -entity.radius,
-      -entity.radius,
-      size,
-      size);
+  QRectF target(
+    -entity.radius,
+    -entity.radius,
+    size,
+    size);
 
+  const double speed =
+    std::hypot(entity.velocity.x(), entity.velocity.y());
+
+  if (has_walking_animation_) {
+    const QPixmap& frame =
+      speed > 1e-3
+        ? walking_animation_.frameAt(speed, last_dt_sec_)
+        : walking_animation_.currentFrame();
+
+    painter.drawPixmap(target, frame, frame.rect());
+  } else if (config_.asset.type == makadi::config::AssetType::Image && has_entity_image_) {
     painter.drawPixmap(target, entity_image_, entity_image_.rect());
   } else {
     painter.setBrush(QColor(config_.asset.color));

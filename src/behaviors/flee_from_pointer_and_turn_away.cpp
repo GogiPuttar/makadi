@@ -19,12 +19,20 @@ core::BehaviorStatus FleeFromPointerAndTurnAway::tick(double dt_sec)
   const QPointF away = position - pointer;
 
   const double dist = std::hypot(away.x(), away.y());
+  const bool pointer_in_radius = dist > 1.0 && dist < flee_radius_;
 
-  if (dist > 1.0 && dist < flee_radius_) {
+  if (pointer_in_radius) {
     const double strength = 1.0 - dist / flee_radius_;
     const QPointF dir = away / dist;
 
     entity_.velocity += dir * max_speed_ * strength * dt_sec;
+
+    const double speed =
+      std::hypot(entity_.velocity.x(), entity_.velocity.y());
+
+    if (speed > 1e-6 && speed < min_speed_) {
+      entity_.velocity *= min_speed_ / speed;
+    }
 
     const core::Angle desired_heading =
       core::Angle::fromRadians(std::atan2(dir.y(), dir.x()));
@@ -33,9 +41,12 @@ core::BehaviorStatus FleeFromPointerAndTurnAway::tick(double dt_sec)
       desired_heading - entity_.pose.theta;
 
     entity_.pose.theta += heading_error * turn_gain_ * dt_sec;
+  } else {
+    entity_.velocity = QPointF(0.0, 0.0);
   }
 
   entity_.velocity *= damping_;
+
   entity_.pose.x += entity_.velocity.x() * dt_sec;
   entity_.pose.y += entity_.velocity.y() * dt_sec;
 

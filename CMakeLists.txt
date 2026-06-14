@@ -15,6 +15,7 @@ add_library(makadi_core
   src/config/path_utils.cpp
   src/core/world.cpp
   src/input/pointer_provider.cpp
+  src/render/animated_sprite.cpp
   src/render/overlay_window.cpp
   src/behaviors/flee_from_pointer.cpp
   src/behaviors/flee_from_pointer_and_turn_away.cpp
