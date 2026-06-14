@@ -24,7 +24,8 @@ enum class BehaviorType {
 
 struct BehaviorConfig {
   BehaviorType type = BehaviorType::FleeFromPointer;
-  double flee_radius = 160.0;
+  double flee_radius = 60.0;
+  double safe_radius = 160.0;
   double min_speed = 0.0;
   double max_speed = 500.0;
   double damping = 0.90;

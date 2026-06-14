@@ -20,9 +20,18 @@ core::BehaviorStatus FleeFromPointerAndTurnAway::tick(double dt_sec)
   const QPointF away = position - pointer;
 
   const double dist = std::hypot(away.x(), away.y());
-  const bool pointer_in_radius = dist > 1.0 && dist < flee_radius_;
 
-  if (pointer_in_radius) {
+  if (!fleeing_ && dist < flee_radius_) {
+    fleeing_ = true;
+  }
+
+  if (fleeing_ && dist > safe_radius_) {
+    fleeing_ = false;
+  }
+
+  const bool should_flee = fleeing_ && dist > 1.0;
+
+  if (should_flee) {
     const double strength = 1.0 - dist / flee_radius_;
     const QPointF dir = away / dist;
 

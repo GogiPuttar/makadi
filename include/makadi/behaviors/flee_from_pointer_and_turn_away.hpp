@@ -16,6 +16,7 @@ public:
   core::BehaviorStatus tick(double dt_sec) override;
 
   void setFleeRadius(double value) { flee_radius_ = value; }
+  void setSafeRadius(double value) { safe_radius_ = value; }
   void setMinSpeed(double value) { min_speed_ = value; }
   void setMaxSpeed(double value) { max_speed_ = value; }
   void setDamping(double value) { damping_ = value; }
@@ -28,6 +29,8 @@ private:
   const input::PointerProvider& pointer_provider_;
 
   double flee_radius_ = 160.0;
+  double safe_radius_ = 160.0;
+  bool fleeing_ = false;
   double min_speed_ = 0.0;
   double max_speed_ = 500.0;
   double damping_ = 0.90;

@@ -81,6 +81,11 @@ AppConfig loadAppConfig(const QString& path)
     if (behavior["flee_radius"]) {
       config.behavior.flee_radius = behavior["flee_radius"].as<double>();
     }
+    if (behavior["safe_radius"]) {
+      config.behavior.safe_radius = behavior["safe_radius"].as<double>();
+    } else {
+      config.behavior.safe_radius = config.behavior.flee_radius;
+    }
 
     if (behavior["min_speed"]) {
       config.behavior.min_speed = behavior["min_speed"].as<double>();

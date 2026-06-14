@@ -174,6 +174,7 @@ OverlayWindow::OverlayWindow(
         pointer_provider_);
 
       node->setFleeRadius(config_.behavior.flee_radius);
+      node->setSafeRadius(config_.behavior.safe_radius);
       node->setMinSpeed(config_.behavior.min_speed);
       node->setMaxSpeed(config_.behavior.max_speed);
       node->setDamping(config_.behavior.damping);
