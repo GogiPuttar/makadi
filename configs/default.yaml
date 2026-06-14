@@ -12,15 +12,15 @@ asset:
 
 # BEHAVIOR
 
-# behavior:
-#   type: flee_from_pointer_and_turn_away
-#   flee_radius: 160
-#   max_speed: 500
-#   damping: 0.90
-#   turn_gain: 12.0
-
 behavior:
-  type: flee_from_pointer
+  type: flee_from_pointer_and_turn_away
   flee_radius: 160
   max_speed: 500
   damping: 0.90
+  turn_gain: 12.0
+
+# behavior:
+#   type: flee_from_pointer
+#   flee_radius: 160
+#   max_speed: 500
+#   damping: 0.90
