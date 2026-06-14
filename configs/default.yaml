@@ -15,7 +15,7 @@ asset:
 behavior:
   type: flee_from_pointer_and_turn_away
   flee_radius: 60
-  safe_radius: 160
+  safe_radius: 200
   min_speed: 400
   max_speed: 1200
   damping: 0.9
