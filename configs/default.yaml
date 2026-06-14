@@ -7,7 +7,7 @@
 
 asset:
   type: image
-  path: ../assets/images/spider.png
+  path: ../assets/images/tarantula.png
   radius: 24
 
 # BEHAVIOR
@@ -35,7 +35,7 @@ behavior:
 
 animation:
   walking:
-    frames_folder: ../assets/animation/walking_default
+    frames_folder: ../assets/animation/tarantula_walking_default
     speed_to_fps: 0.08
     min_fps: 40
     max_fps: 80
