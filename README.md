@@ -5,6 +5,15 @@
 The project provides a transparent desktop overlay that can render animated entities and drive their behavior through configurable, reusable behavior modules. The long-term goal is to support desktop creatures such as spiders, insects, pets, and other interactive agents that can react to user input and their environment.
 
 The name **Makadi** comes from the Hindi word for *spider*.
+The goal is to make this crawl around your screen like your own pet spider!
+
+<br>
+
+<p align="center">
+  <img src="docs_images/example_image.png" alt="a makadi" />
+</p>
+
+<br>
 
 ---
 
