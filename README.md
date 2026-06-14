@@ -104,7 +104,7 @@ Example:
 ```yaml
 asset:
   type: image
-  path: ../assets/spider.png
+  path: ../assets/images/tarantula.png
   radius: 64
 
 behavior:
@@ -125,7 +125,7 @@ behavior:
 
 animation:
   walking:
-    frames_folder: ../assets/animation/walking_default
+    frames_folder: ../assets/animation/tarantula_walking_default
     speed_to_fps: 0.08
     min_fps: 10
     max_fps: 80
@@ -149,7 +149,7 @@ asset:
 ```yaml
 asset:
   type: image
-  path: ../assets/spider.png
+  path: ../assets/images/tarantula.png
   radius: 64
 ```
 
@@ -186,12 +186,12 @@ Example:
 
 ```text
 configs/default.yaml
-assets/spiders/spider.png
+assets/images/tarantula.png
 ```
 
 ```yaml
 asset:
-  path: ../assets/spider.png
+  path: ../assets/images/tarantula.png
 ```
 
 This works regardless of the directory from which Makadi is launched.

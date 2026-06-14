@@ -57,7 +57,7 @@ TEST(AppConfig, ParsesImageAssetAndResolvesRelativePath)
   const auto config_path = writeTempConfig(R"(
 asset:
   type: image
-  path: ../assets/spider.png
+  path: ../assets/images/tarantula.png
   radius: 48
 )");
 
@@ -68,7 +68,7 @@ asset:
   EXPECT_DOUBLE_EQ(config.asset.radius, 48.0);
 
   const auto expected =
-    (config_path.parent_path() / "../assets/spider.png").lexically_normal();
+    (config_path.parent_path() / "../assets/images/tarantula.png").lexically_normal();
 
   EXPECT_EQ(config.asset.path.toStdString(), expected.string());
 }
