@@ -14,13 +14,28 @@ asset:
 
 behavior:
   type: flee_from_pointer_and_turn_away
-  flee_radius: 160
-  max_speed: 500
-  damping: 0.90
+  flee_radius: 60
+  safe_radius: 200
+  min_speed: 400
+  max_speed: 1200
+  damping: 0.9
   turn_gain: 12.0
+  max_turn_speed: 50.0  # rad/s
+  heading_offset_deg: 90 # degrees
+  velocity_tracking_gain: 12.0
+  pointer_filter_alpha: 0.15
 
 # behavior:
 #   type: flee_from_pointer
 #   flee_radius: 160
 #   max_speed: 500
 #   damping: 0.90
+
+# ANIMATION
+
+animation:
+  walking:
+    frames_folder: ../assets/animation/walking_3
+    speed_to_fps: 0.08
+    min_fps: 40
+    max_fps: 80

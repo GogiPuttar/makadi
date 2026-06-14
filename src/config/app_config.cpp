@@ -82,6 +82,14 @@ AppConfig loadAppConfig(const QString& path)
       config.behavior.flee_radius = behavior["flee_radius"].as<double>();
     }
 
+    if (behavior["safe_radius"]) {
+      config.behavior.safe_radius = behavior["safe_radius"].as<double>();
+    }
+
+    if (behavior["min_speed"]) {
+      config.behavior.min_speed = behavior["min_speed"].as<double>();
+    }
+
     if (behavior["max_speed"]) {
       config.behavior.max_speed = behavior["max_speed"].as<double>();
     }
@@ -92,6 +100,58 @@ AppConfig loadAppConfig(const QString& path)
 
     if (behavior["turn_gain"]) {
       config.behavior.turn_gain = behavior["turn_gain"].as<double>();
+    }
+    
+    if (behavior["max_turn_speed"]) {
+      config.behavior.max_turn_speed = behavior["max_turn_speed"].as<double>();
+    }
+
+    if (behavior["heading_offset_deg"]) {
+      config.behavior.heading_offset_deg = behavior["heading_offset_deg"].as<double>();
+    }
+
+    if (behavior["velocity_tracking_gain"]) {
+      config.behavior.velocity_tracking_gain = behavior["velocity_tracking_gain"].as<double>();
+    }
+
+    if (behavior["pointer_filter_alpha"]) {
+      config.behavior.pointer_filter_alpha =
+        behavior["pointer_filter_alpha"].as<double>();
+    }
+  }
+
+  if (config.behavior.safe_radius <= 0.0) {
+    config.behavior.safe_radius = config.behavior.flee_radius;
+  }
+
+  const YAML::Node animation = root["animation"];
+  if (animation) {
+    const YAML::Node walking = animation["walking"];
+
+    if (walking) {
+      if (walking["frames_folder"]) {
+        const auto resolved = resolvePath(
+          std::filesystem::path(path.toStdString()),
+          std::filesystem::path(walking["frames_folder"].as<std::string>()));
+
+        config.animation.walking.frames_folder =
+          QString::fromStdString(resolved.string());
+      }
+
+      if (walking["speed_to_fps"]) {
+        config.animation.walking.speed_to_fps =
+          walking["speed_to_fps"].as<double>();
+      }
+
+      if (walking["min_fps"]) {
+        config.animation.walking.min_fps =
+          walking["min_fps"].as<double>();
+      }
+
+      if (walking["max_fps"]) {
+        config.animation.walking.max_fps =
+          walking["max_fps"].as<double>();
+      }
     }
   }
 

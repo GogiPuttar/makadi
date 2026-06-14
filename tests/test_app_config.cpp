@@ -120,10 +120,16 @@ asset:
     makadi::config::loadAppConfig(QString::fromStdString(path.string()));
 
   EXPECT_EQ(config.behavior.type, makadi::config::BehaviorType::FleeFromPointer);
-  EXPECT_DOUBLE_EQ(config.behavior.flee_radius, 160.0);
+  EXPECT_DOUBLE_EQ(config.behavior.flee_radius, 60.0);
+  EXPECT_DOUBLE_EQ(config.behavior.safe_radius, 60.0);
+  EXPECT_DOUBLE_EQ(config.behavior.min_speed, 0.0);
   EXPECT_DOUBLE_EQ(config.behavior.max_speed, 500.0);
   EXPECT_DOUBLE_EQ(config.behavior.damping, 0.90);
   EXPECT_DOUBLE_EQ(config.behavior.turn_gain, 12.0);
+  EXPECT_DOUBLE_EQ(config.behavior.max_turn_speed, 12.0);
+  EXPECT_DOUBLE_EQ(config.behavior.heading_offset_deg, 0.0);
+  EXPECT_DOUBLE_EQ(config.behavior.velocity_tracking_gain, 12.0);
+  EXPECT_DOUBLE_EQ(config.behavior.pointer_filter_alpha, 1.0);
 }
 
 TEST(AppConfig, ParsesFleeBehavior)
@@ -185,4 +191,87 @@ behavior:
   EXPECT_THROW(
     makadi::config::loadAppConfig(QString::fromStdString(path.string())),
     std::runtime_error);
+}
+
+TEST(AppConfig, ParsesWalkingAnimationConfig)
+{
+  const auto path = writeTempConfig(R"(
+asset:
+  type: circle
+
+animation:
+  walking:
+    frames_folder: ../assets/animation/walking_3
+    speed_to_fps: 0.08
+    min_fps: 10
+    max_fps: 80
+)");
+
+  const auto config =
+    makadi::config::loadAppConfig(QString::fromStdString(path.string()));
+
+  const auto expected =
+    (path.parent_path() / "../assets/animation/walking_3").lexically_normal();
+
+  EXPECT_EQ(config.animation.walking.frames_folder.toStdString(), expected.string());
+  EXPECT_DOUBLE_EQ(config.animation.walking.speed_to_fps, 0.08);
+  EXPECT_DOUBLE_EQ(config.animation.walking.min_fps, 10.0);
+  EXPECT_DOUBLE_EQ(config.animation.walking.max_fps, 80.0);
+}
+
+TEST(AppConfig, ParsesAdvancedFleeTurnBehaviorFields)
+{
+  const auto path = writeTempConfig(R"(
+asset:
+  type: circle
+
+behavior:
+  type: flee_from_pointer_and_turn_away
+  flee_radius: 160
+  safe_radius: 260
+  min_speed: 300
+  max_speed: 1000
+  damping: 0.90
+  turn_gain: 12.0
+  max_turn_speed: 14.0
+  heading_offset_deg: 90
+  velocity_tracking_gain: 8.5
+  pointer_filter_alpha: 0.15
+)");
+
+  const auto config =
+    makadi::config::loadAppConfig(QString::fromStdString(path.string()));
+
+  EXPECT_EQ(
+    config.behavior.type,
+    makadi::config::BehaviorType::FleeFromPointerAndTurnAway);
+
+  EXPECT_DOUBLE_EQ(config.behavior.flee_radius, 160.0);
+  EXPECT_DOUBLE_EQ(config.behavior.safe_radius, 260.0);
+  EXPECT_DOUBLE_EQ(config.behavior.min_speed, 300.0);
+  EXPECT_DOUBLE_EQ(config.behavior.max_speed, 1000.0);
+  EXPECT_DOUBLE_EQ(config.behavior.damping, 0.90);
+  EXPECT_DOUBLE_EQ(config.behavior.turn_gain, 12.0);
+  EXPECT_DOUBLE_EQ(config.behavior.max_turn_speed, 14.0);
+  EXPECT_DOUBLE_EQ(config.behavior.heading_offset_deg, 90.0);
+  EXPECT_DOUBLE_EQ(config.behavior.velocity_tracking_gain, 8.5);
+  EXPECT_DOUBLE_EQ(config.behavior.pointer_filter_alpha, 0.15);
+}
+
+TEST(AppConfig, SafeRadiusDefaultsToFleeRadius)
+{
+  const auto path = writeTempConfig(R"(
+asset:
+  type: circle
+
+behavior:
+  type: flee_from_pointer_and_turn_away
+  flee_radius: 123
+)");
+
+  const auto config =
+    makadi::config::loadAppConfig(QString::fromStdString(path.string()));
+
+  EXPECT_DOUBLE_EQ(config.behavior.flee_radius, 123.0);
+  EXPECT_DOUBLE_EQ(config.behavior.safe_radius, 123.0);
 }
