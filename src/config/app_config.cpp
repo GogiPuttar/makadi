@@ -81,10 +81,9 @@ AppConfig loadAppConfig(const QString& path)
     if (behavior["flee_radius"]) {
       config.behavior.flee_radius = behavior["flee_radius"].as<double>();
     }
+
     if (behavior["safe_radius"]) {
       config.behavior.safe_radius = behavior["safe_radius"].as<double>();
-    } else {
-      config.behavior.safe_radius = config.behavior.flee_radius;
     }
 
     if (behavior["min_speed"]) {
@@ -111,10 +110,18 @@ AppConfig loadAppConfig(const QString& path)
       config.behavior.heading_offset_deg = behavior["heading_offset_deg"].as<double>();
     }
 
+    if (behavior["velocity_tracking_gain"]) {
+      config.behavior.velocity_tracking_gain = behavior["velocity_tracking_gain"].as<double>();
+    }
+
     if (behavior["pointer_filter_alpha"]) {
       config.behavior.pointer_filter_alpha =
         behavior["pointer_filter_alpha"].as<double>();
     }
+  }
+
+  if (config.behavior.safe_radius <= 0.0) {
+    config.behavior.safe_radius = config.behavior.flee_radius;
   }
 
   const YAML::Node animation = root["animation"];

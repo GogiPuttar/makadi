@@ -22,6 +22,7 @@ behavior:
   turn_gain: 12.0
   max_turn_speed: 50.0  # rad/s
   heading_offset_deg: 90 # degrees
+  velocity_tracking_gain: 12.0
   pointer_filter_alpha: 0.15
 
 # behavior:

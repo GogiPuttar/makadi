@@ -52,11 +52,9 @@ core::BehaviorStatus FleeFromPointerAndTurnAway::tick(double dt_sec)
     const QPointF desired_velocity =
       dir * target_speed;
 
-    const double velocity_tracking_gain = 12.0;
-
     entity_.velocity +=
       (desired_velocity - entity_.velocity) *
-      std::clamp(velocity_tracking_gain * dt_sec, 0.0, 1.0);
+      std::clamp(velocity_tracking_gain_ * dt_sec, 0.0, 1.0);
 
     const double speed =
       std::hypot(entity_.velocity.x(), entity_.velocity.y());

@@ -32,7 +32,8 @@ jobs:
             libglx-dev \
             libopengl-dev \
             mesa-common-dev \
-            libxkbcommon-dev
+            libxkbcommon-dev \
+            xvfb
 
       - name: Configure
         run: cmake -B build -S . -DMAKADI_BUILD_TESTS=ON
@@ -41,4 +42,4 @@ jobs:
         run: cmake --build build -j"$(nproc)"
 
       - name: Run tests
-        run: ctest --test-dir build --output-on-failure
+        run: xvfb-run -a ctest --test-dir build --output-on-failure
