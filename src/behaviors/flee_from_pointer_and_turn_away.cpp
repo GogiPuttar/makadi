@@ -35,7 +35,17 @@ core::BehaviorStatus FleeFromPointerAndTurnAway::tick(double dt_sec)
     const double strength = 1.0 - dist / flee_radius_;
     const QPointF dir = away / dist;
 
-    entity_.velocity += dir * max_speed_ * strength * dt_sec;
+    const double target_speed =
+      std::max(min_speed_, max_speed_ * strength);
+
+    const QPointF desired_velocity =
+      dir * target_speed;
+
+    const double velocity_tracking_gain = 12.0;
+
+    entity_.velocity +=
+      (desired_velocity - entity_.velocity) *
+      std::clamp(velocity_tracking_gain * dt_sec, 0.0, 1.0);
 
     const double speed =
       std::hypot(entity_.velocity.x(), entity_.velocity.y());
