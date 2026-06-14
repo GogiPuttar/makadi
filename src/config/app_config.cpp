@@ -110,6 +110,11 @@ AppConfig loadAppConfig(const QString& path)
     if (behavior["heading_offset_deg"]) {
       config.behavior.heading_offset_deg = behavior["heading_offset_deg"].as<double>();
     }
+
+    if (behavior["pointer_filter_alpha"]) {
+      config.behavior.pointer_filter_alpha =
+        behavior["pointer_filter_alpha"].as<double>();
+    }
   }
 
   const YAML::Node animation = root["animation"];

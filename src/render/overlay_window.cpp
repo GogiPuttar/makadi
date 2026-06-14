@@ -182,6 +182,7 @@ OverlayWindow::OverlayWindow(
       node->setMaxTurnSpeed(config_.behavior.max_turn_speed);
       node->setHeadingOffset(
         makadi::core::Angle::fromDegrees(config_.behavior.heading_offset_deg));
+      node->setPointerFilterAlpha(config_.behavior.pointer_filter_alpha);
 
       behavior = std::move(node);
       break;

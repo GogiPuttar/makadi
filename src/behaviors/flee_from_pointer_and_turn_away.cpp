@@ -15,7 +15,18 @@ FleeFromPointerAndTurnAway::FleeFromPointerAndTurnAway(
 
 core::BehaviorStatus FleeFromPointerAndTurnAway::tick(double dt_sec)
 {
-  const QPointF pointer = pointer_provider_.pointerPosition();
+  const QPointF raw_pointer = pointer_provider_.pointerPosition();
+
+  if (!has_filtered_pointer_) {
+    filtered_pointer_ = raw_pointer;
+    has_filtered_pointer_ = true;
+  } else {
+    filtered_pointer_ =
+      raw_pointer * pointer_filter_alpha_ +
+      filtered_pointer_ * (1.0 - pointer_filter_alpha_);
+  }
+
+  const QPointF pointer = filtered_pointer_;
   const QPointF position(entity_.pose.x, entity_.pose.y);
   const QPointF away = position - pointer;
 

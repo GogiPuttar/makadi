@@ -32,6 +32,7 @@ struct BehaviorConfig {
   double turn_gain = 12.0;
   double max_turn_speed = 12.0;
   double heading_offset_deg = 0.0;
+  double pointer_filter_alpha = 1.0;
 };
 
 struct WalkingAnimationConfig {

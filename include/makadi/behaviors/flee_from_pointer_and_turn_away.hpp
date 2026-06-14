@@ -23,6 +23,7 @@ public:
   void setTurnGain(double value) { turn_gain_ = value; }
   void setMaxTurnSpeed(double value) { max_turn_speed_ = value; }
   void setHeadingOffset(core::Angle value) { heading_offset_ = value; }
+  void setPointerFilterAlpha(double value) { pointer_filter_alpha_ = std::clamp(value, 0.0, 1.0); }
 
 private:
   core::Entity& entity_;
@@ -37,6 +38,9 @@ private:
   double turn_gain_ = 12.0;
   double max_turn_speed_ = 12.0;  // rad/s
   core::Angle heading_offset_ = core::Angle::fromRadians(0.0);
+  double pointer_filter_alpha_ = 1.0;
+  bool has_filtered_pointer_ = false;
+  QPointF filtered_pointer_;
 };
 
 }  // namespace makadi::behaviors
