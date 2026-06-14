@@ -15,6 +15,11 @@ public:
 
   core::BehaviorStatus tick(double dt_sec) override;
 
+  void setFleeRadius(double value) { flee_radius_ = value; }
+  void setMaxSpeed(double value) { max_speed_ = value; }
+  void setDamping(double value) { damping_ = value; }
+  void setTurnGain(double value) { turn_gain_ = value; }
+
 private:
   core::Entity& entity_;
   const input::PointerProvider& pointer_provider_;

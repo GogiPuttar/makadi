@@ -1,3 +1,5 @@
+# ASSET
+
 # asset:
 #   type: circle
 #   radius: 24
@@ -7,3 +9,18 @@ asset:
   type: image
   path: ../assets/images/spider.png
   radius: 24
+
+# BEHAVIOR
+
+# behavior:
+#   type: flee_from_pointer_and_turn_away
+#   flee_radius: 160
+#   max_speed: 500
+#   damping: 0.90
+#   turn_gain: 12.0
+
+behavior:
+  type: flee_from_pointer
+  flee_radius: 160
+  max_speed: 500
+  damping: 0.90

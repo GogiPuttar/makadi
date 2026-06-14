@@ -22,6 +22,19 @@ static AssetType parseAssetType(const std::string& value)
   throw std::runtime_error("Unknown asset.type: " + value);
 }
 
+static BehaviorType parseBehaviorType(const std::string& value)
+{
+  if (value == "flee_from_pointer") {
+    return BehaviorType::FleeFromPointer;
+  }
+
+  if (value == "flee_from_pointer_and_turn_away") {
+    return BehaviorType::FleeFromPointerAndTurnAway;
+  }
+
+  throw std::runtime_error("Unknown behavior.type: " + value);
+}
+
 AppConfig loadAppConfig(const QString& path)
 {
   YAML::Node root = YAML::LoadFile(path.toStdString());
@@ -57,6 +70,29 @@ AppConfig loadAppConfig(const QString& path)
 
   if (config.asset.type == AssetType::Image && config.asset.path.isEmpty()) {
     throw std::runtime_error("asset.path is required when asset.type is image");
+  }
+
+  const YAML::Node behavior = root["behavior"];
+  if (behavior) {
+    if (behavior["type"]) {
+      config.behavior.type = parseBehaviorType(behavior["type"].as<std::string>());
+    }
+
+    if (behavior["flee_radius"]) {
+      config.behavior.flee_radius = behavior["flee_radius"].as<double>();
+    }
+
+    if (behavior["max_speed"]) {
+      config.behavior.max_speed = behavior["max_speed"].as<double>();
+    }
+
+    if (behavior["damping"]) {
+      config.behavior.damping = behavior["damping"].as<double>();
+    }
+
+    if (behavior["turn_gain"]) {
+      config.behavior.turn_gain = behavior["turn_gain"].as<double>();
+    }
   }
 
   return config;

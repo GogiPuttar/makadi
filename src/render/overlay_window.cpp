@@ -73,6 +73,7 @@ OverlayWindow::OverlayWindow(
   if (debug_) {
     std::cerr << "[makadi debug] Asset type: ";
 
+    // Asset logging
     if (config_.asset.type == makadi::config::AssetType::Image) {
       std::cerr << "image\n";
       std::cerr << "[makadi debug] Asset path: "
@@ -85,6 +86,24 @@ OverlayWindow::OverlayWindow(
 
     std::cerr << "[makadi debug] Asset radius: "
               << config_.asset.radius << "\n";
+
+    std::cerr << "[makadi debug] Behavior type: ";
+
+    // Behavior logging
+    switch (config_.behavior.type) {
+      case makadi::config::BehaviorType::FleeFromPointer:
+        std::cerr << "flee_from_pointer\n";
+        break;
+      case makadi::config::BehaviorType::FleeFromPointerAndTurnAway:
+        std::cerr << "flee_from_pointer_and_turn_away\n";
+        break;
+    }
+
+    std::cerr
+      << "[makadi debug] Behavior flee_radius: " << config_.behavior.flee_radius << "\n"
+      << "[makadi debug] Behavior max_speed: " << config_.behavior.max_speed << "\n"
+      << "[makadi debug] Behavior damping: " << config_.behavior.damping << "\n"
+      << "[makadi debug] Behavior turn_gain: " << config_.behavior.turn_gain << "\n";
   }
 
   if (config_.asset.type == makadi::config::AssetType::Image) {
@@ -102,11 +121,38 @@ OverlayWindow::OverlayWindow(
   auto* quit_shortcut = new QShortcut(QKeySequence("Ctrl+Q"), this);
   connect(quit_shortcut, &QShortcut::activated, qApp, &QApplication::quit);
 
-  world_.setBehavior(
-    std::make_unique<behaviors::FleeFromPointer>(
-    // std::make_unique<behaviors::FleeFromPointerAndTurnAway>(
-      world_.mainEntity(),
-      pointer_provider_));
+  std::unique_ptr<core::BehaviorNode> behavior;
+
+  switch (config_.behavior.type) {
+    case makadi::config::BehaviorType::FleeFromPointer: {
+      auto node = std::make_unique<behaviors::FleeFromPointer>(
+        world_.mainEntity(),
+        pointer_provider_);
+
+      node->setFleeRadius(config_.behavior.flee_radius);
+      node->setMaxSpeed(config_.behavior.max_speed);
+      node->setDamping(config_.behavior.damping);
+
+      behavior = std::move(node);
+      break;
+    }
+
+    case makadi::config::BehaviorType::FleeFromPointerAndTurnAway: {
+      auto node = std::make_unique<behaviors::FleeFromPointerAndTurnAway>(
+        world_.mainEntity(),
+        pointer_provider_);
+
+      node->setFleeRadius(config_.behavior.flee_radius);
+      node->setMaxSpeed(config_.behavior.max_speed);
+      node->setDamping(config_.behavior.damping);
+      node->setTurnGain(config_.behavior.turn_gain);
+
+      behavior = std::move(node);
+      break;
+    }
+  }
+
+  world_.setBehavior(std::move(behavior));
 
   clock_.start();
 
