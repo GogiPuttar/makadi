@@ -2,6 +2,7 @@
 #include "makadi/behaviors/flee_from_pointer_and_turn_away.hpp"
 
 #include <cmath>
+#include <algorithm>
 
 namespace makadi::behaviors {
 
@@ -35,12 +36,19 @@ core::BehaviorStatus FleeFromPointerAndTurnAway::tick(double dt_sec)
     }
 
     const core::Angle desired_heading =
-      core::Angle::fromRadians(std::atan2(dir.y(), dir.x()));
+      core::Angle::fromRadians(std::atan2(dir.y(), dir.x())) + heading_offset_;
 
     const core::Angle heading_error =
       desired_heading - entity_.pose.theta;
 
-    entity_.pose.theta += heading_error * turn_gain_ * dt_sec;
+    double angular_step =
+      heading_error.radians() * turn_gain_ * dt_sec;
+
+    const double max_step = max_turn_speed_ * dt_sec;
+
+    angular_step = std::clamp(angular_step, -max_step, max_step);
+
+    entity_.pose.theta += core::Angle::fromRadians(angular_step);
   } else {
     entity_.velocity = QPointF(0.0, 0.0);
   }

@@ -20,6 +20,8 @@ public:
   void setMaxSpeed(double value) { max_speed_ = value; }
   void setDamping(double value) { damping_ = value; }
   void setTurnGain(double value) { turn_gain_ = value; }
+  void setMaxTurnSpeed(double value) { max_turn_speed_ = value; }
+  void setHeadingOffset(core::Angle value) { heading_offset_ = value; }
 
 private:
   core::Entity& entity_;
@@ -30,6 +32,8 @@ private:
   double max_speed_ = 500.0;
   double damping_ = 0.90;
   double turn_gain_ = 12.0;
+  double max_turn_speed_ = 12.0;  // rad/s
+  core::Angle heading_offset_ = core::Angle::fromRadians(0.0);
 };
 
 }  // namespace makadi::behaviors

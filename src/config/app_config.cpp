@@ -97,6 +97,14 @@ AppConfig loadAppConfig(const QString& path)
     if (behavior["turn_gain"]) {
       config.behavior.turn_gain = behavior["turn_gain"].as<double>();
     }
+    
+    if (behavior["max_turn_speed"]) {
+      config.behavior.max_turn_speed = behavior["max_turn_speed"].as<double>();
+    }
+
+    if (behavior["heading_offset_deg"]) {
+      config.behavior.heading_offset_deg = behavior["heading_offset_deg"].as<double>();
+    }
   }
 
   const YAML::Node animation = root["animation"];

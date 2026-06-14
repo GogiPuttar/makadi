@@ -178,6 +178,9 @@ OverlayWindow::OverlayWindow(
       node->setMaxSpeed(config_.behavior.max_speed);
       node->setDamping(config_.behavior.damping);
       node->setTurnGain(config_.behavior.turn_gain);
+      node->setMaxTurnSpeed(config_.behavior.max_turn_speed);
+      node->setHeadingOffset(
+        makadi::core::Angle::fromDegrees(config_.behavior.heading_offset_deg));
 
       behavior = std::move(node);
       break;

@@ -29,6 +29,8 @@ struct BehaviorConfig {
   double max_speed = 500.0;
   double damping = 0.90;
   double turn_gain = 12.0;
+  double max_turn_speed = 12.0;
+  double heading_offset_deg = 0.0;
 };
 
 struct WalkingAnimationConfig {
