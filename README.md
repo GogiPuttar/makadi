@@ -23,7 +23,8 @@ sudo apt install \
   libx11-dev \
   libxfixes-dev \
   libxext-dev \
-  libyaml-cpp-dev
+  libyaml-cpp-dev \
+  libgtest-dev
 ```
 
 ## Instructions

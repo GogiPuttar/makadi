@@ -23,7 +23,7 @@ add_executable(makadi
   src/platform/x11_overlay_platform.cpp
 
   src/input/pointer_provider.cpp
-  
+
   src/config/app_config.cpp
   src/config/path_utils.cpp
 )
@@ -44,3 +44,10 @@ target_link_libraries(makadi PRIVATE
 install(TARGETS makadi
   RUNTIME DESTINATION bin
 )
+
+option(MAKADI_BUILD_TESTS "Build Makadi tests" ON)
+
+if(MAKADI_BUILD_TESTS)
+  enable_testing()
+  add_subdirectory(tests)
+endif()
