@@ -52,20 +52,22 @@ Makadi currently relies on X11 features to support click-through overlays while 
 Ubuntu / Pop!_OS:
 
 ```bash
-sudo apt install \
+sudo apt update
+sudo apt install -y \
   build-essential \
   cmake \
+  libgtest-dev \
   qt6-base-dev \
-  yaml-cpp \
   libyaml-cpp-dev \
   libx11-dev \
   libxfixes-dev \
   libxext-dev \
-  libxkbcommon-dev \
   libgl-dev \
   libglx-dev \
   libopengl-dev \
-  mesa-common-dev
+  mesa-common-dev \
+  libxkbcommon-dev \
+  xvfb
 ```
 
 ### Build
